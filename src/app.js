@@ -5,17 +5,35 @@ const cors = require('cors');
 const helmet = require('helmet');
 const { NODE_ENV } = require('./config');
 
+const authRouter = require('./auth/auth-router');
+const usersRouter = require('./users/users-router');
+const itemsRouter = require('./items/items-router');
+const programsRouter = require('./programs/programs-router');
+const newsRouter = require('./news/news-router');
+const promosRouter = require('./promos/promos-router');
+const testimoniesRouter = require('./testimonies/testimonies-router');
+const reviewsRouter = require('./reviews/reviews-router');
+
 const app = express();
 
-const morganOption = (NODE_ENV === 'production') ? 'tiny' : 'common';
+const morganOption = NODE_ENV === 'production' ? 'tiny' : 'common';
 
 app.use(morgan(morganOption));
 app.use(helmet());
-app.use(cors());
+app.use(
+  cors({
+    origin: NODE_ENV,
+  })
+);
 
-app.get('/', (req, res) => {
-  res.send('Hello, world!');
-});
+app.use('/api/users', usersRouter);
+app.use('/api/items', itemsRouter);
+app.use('/api/programs', programsRouter);
+app.use('/api/news', newsRouter);
+app.use('/api/promos', promosRouter);
+app.use('/api/testimonies', testimoniesRouter);
+app.use('/api/reviews', reviewsRouter);
+app.use('api/auth', authRouter);
 
 app.use(function errorHandler(error, req, res, next) {
   let response;
