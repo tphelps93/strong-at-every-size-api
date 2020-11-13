@@ -29,7 +29,7 @@ purchasesRouter
       price,
       category,
     };
-    /* Add a date_created */
+
     for (const field of ['title', 'price', 'category']) {
       if (!newPurchase[field]) {
         logger.error(`${field} is required`);
@@ -95,7 +95,7 @@ purchasesRouter
       return res.status(400).json({
         error: {
           message:
-            'Request body must contain either "photo", "content", "date_created"',
+            'Request body must contain either "photo", "content"',
         },
       });
     }

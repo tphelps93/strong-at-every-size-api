@@ -23,14 +23,13 @@ testimoniesRouter
       .catch(next);
   })
   .post(jsonBodyParser, (req, res, next) => {
-    const { photo, content, date_created } = req.body;
+    const { photo, content } = req.body;
     const newTestimony = {
       photo,
       content,
-      date_created,
     };
 
-    for (const field of ['photo', 'content', 'date_created']) {
+    for (const field of ['photo', 'content']) {
       if (!newTestimony[field]) {
         logger.error(`${field} is required`);
         return res.status(400).send({
@@ -82,9 +81,9 @@ testimoniesRouter
   })
 
   .patch(jsonBodyParser, (req, res, next) => {
-    const { photo, content, date_created } = req.body;
+    const { photo, content } = req.body;
 
-    const testimonyToUpdate = { photo, content, date_created };
+    const testimonyToUpdate = { photo, content };
 
     const numOfValues = Object.values(testimonyToUpdate).filter(Boolean).length;
 
@@ -93,7 +92,7 @@ testimoniesRouter
       return res.status(400).json({
         error: {
           message:
-            'Request body must contain either "photo", "content", "date_created"'
+            'Request body must contain either "photo", "content"'
         },
       });
     }

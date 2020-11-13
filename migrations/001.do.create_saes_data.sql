@@ -25,7 +25,8 @@ CREATE TABLE saes_users (
     address TEXT NOT NULL,
     state TEXT NOT NULL,
     zip INTEGER NOT NULL,
-    isAdmin BOOLEAN NOT NULL DEFAULT FALSE
+    isAdmin BOOLEAN NOT NULL DEFAULT FALSE,
+    date_created TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
 CREATE TABLE saes_items (
@@ -50,6 +51,7 @@ CREATE TABLE user_purchases (
     title TEXT NOT NULL,
     price TEXT NOT NULL,
     category item_type NOT NULL,
+    date_purchased TIMESTAMPTZ DEFAULT now() NOT NULL,
     userId INTEGER REFERENCES saes_users(user_id) ON DELETE CASCADE NULL,
     itemId INTEGER REFERENCES saes_items(item_id) ON DELETE CASCADE NULL,
     programId INTEGER REFERENCES saes_programs(program_id) ON DELETE CASCADE NULL

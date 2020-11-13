@@ -22,13 +22,12 @@ promosRouter
       .catch(next);
   })
   .post(jsonBodyParser, (req, res, next) => {
-    const { content, date_created } = req.body;
+    const { content } = req.body;
     const newPromo = {
       content,
-      date_created,
     };
 
-    for (const field of ['content', 'date_created']) {
+    for (const field of ['content']) {
       if (!newPromo[field]) {
         logger.error(`${field} is required`);
         return res.status(400).send({
@@ -79,9 +78,9 @@ promosRouter
   })
 
   .patch(jsonBodyParser, (req, res, next) => {
-    const { content, date_created } = req.body;
+    const { content } = req.body;
 
-    const promoToUpdate = { content, date_created };
+    const promoToUpdate = { content };
 
     const numOfValues = Object.values(promoToUpdate).filter(Boolean).length;
 
@@ -89,7 +88,7 @@ promosRouter
       logger.error('Invalid update without required fields');
       return res.status(400).json({
         error: {
-          message: 'Request body must contain either "content", "date_created"',
+          message: 'Request body must contain either "content"',
         },
       });
     }

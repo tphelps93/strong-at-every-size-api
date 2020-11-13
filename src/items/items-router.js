@@ -25,14 +25,13 @@ itemsRouter
       .catch(next);
   })
   .post(jsonBodyParser, (req, res, next) => {
-    const { title, price, category, description, date_created } = req.body;
+    const { title, price, category, description } = req.body;
 
     const newItem = {
       title,
       price,
       category,
       description,
-      date_created,
     };
 
     for (const field of [
@@ -40,7 +39,6 @@ itemsRouter
       'price',
       'category',
       'description',
-      'date_created',
     ]) {
       if (!newItem[field]) {
         logger.error(`${field} is required`);
@@ -93,9 +91,9 @@ itemsRouter
   })
 
   .patch(jsonBodyParser, (req, res, next) => {
-    const { title, price, category, description, date_created } = req.body;
+    const { title, price, category, description } = req.body;
 
-    const itemToUpdate = { title, price, category, description, date_created };
+    const itemToUpdate = { title, price, category, description };
 
     const numOfValues = Object.values(itemToUpdate).filter(Boolean).length;
 
@@ -104,7 +102,7 @@ itemsRouter
       return res.status(400).json({
         error: {
           message:
-            'Request body must contain either "photo", "content", "date_created"',
+            'Request body must contain either "photo", "content"',
         },
       });
     }

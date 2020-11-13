@@ -22,13 +22,12 @@ newsRouter
       .catch(next);
   })
   .post(jsonBodyParser, (req, res, next) => {
-    const { content, date_created } = req.body;
+    const { content } = req.body;
     const newArticle = {
       content,
-      date_created,
     };
 
-    for (const field of ['content', 'date_created']) {
+    for (const field of ['content']) {
       if (!newArticle[field]) {
         logger.error(`${field} is required`);
         return res.status(400).send({
@@ -79,9 +78,9 @@ newsRouter
   })
 
   .patch(jsonBodyParser, (req, res, next) => {
-    const { content, date_created } = req.body;
+    const { content } = req.body;
 
-    const articleToUpdate = { content, date_created };
+    const articleToUpdate = { content };
 
     const numOfValues = Object.values(articleToUpdate).filter(Boolean).length;
 
@@ -90,7 +89,7 @@ newsRouter
       return res.status(400).json({
         error: {
           message:
-            'Request body must contain either "photo", "content", "date_created"',
+            'Request body must contain either "photo", "content"',
         },
       });
     }

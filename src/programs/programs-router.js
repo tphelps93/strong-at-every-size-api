@@ -24,15 +24,14 @@ programsRouter
       .catch(next);
   })
   .post(jsonBodyParser, (req, res, next) => {
-    const { title, price, description, date_created } = req.body;
+    const { title, price, description } = req.body;
     const newProgram = {
       title,
       price,
       description,
-      date_created,
     };
 
-    for (const field of ['title', 'price', 'description', 'date_created']) {
+    for (const field of ['title', 'price', 'description']) {
       if (!newProgram[field]) {
         logger.error(`${field} is required`);
         return res.status(400).send({
@@ -83,9 +82,9 @@ programsRouter
   })
 
   .patch(jsonBodyParser, (req, res, next) => {
-    const { title, price, description, date_created } = req.body;
+    const { title, price, description } = req.body;
 
-    const programToUpdate = { title, price, description, date_created };
+    const programToUpdate = { title, price, description };
 
     const numOfValues = Object.values(programToUpdate).filter(Boolean).length;
 
@@ -94,7 +93,7 @@ programsRouter
       return res.status(400).json({
         error: {
           message:
-            'Request body must contain either "title", "price", "description", "date_created"',
+            'Request body must contain either "title", "price", "description"',
         },
       });
     }

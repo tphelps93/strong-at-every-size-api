@@ -24,14 +24,13 @@ reviewsRouter
       .catch(next);
   })
   .post(jsonBodyParser, (req, res, next) => {
-    const { content, rating, date_created } = req.body;
+    const { content, rating } = req.body;
     const newReview = {
       content,
       rating,
-      date_created,
     };
 
-    for (const field of ['content', 'rating', 'date_created']) {
+    for (const field of ['content', 'rating']) {
       if (!newReview[field]) {
         logger.error(`${field} is required`);
         return res.status(400).send({
@@ -83,9 +82,9 @@ reviewsRouter
   })
 
   .patch(jsonBodyParser, (req, res, next) => {
-    const { content, rating, date_created } = req.body;
+    const { content, rating } = req.body;
 
-    const reviewToUpdate = { content, rating, date_created };
+    const reviewToUpdate = { content, rating };
 
     const numOfValues = Object.values(reviewToUpdate).filter(Boolean).length;
 
@@ -94,7 +93,7 @@ reviewsRouter
       return res.status(400).json({
         error: {
           message:
-            'Request body must contain either "content", "review", "date_created"',
+            'Request body must contain either "content", "review"',
         },
       });
     }
