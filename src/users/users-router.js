@@ -8,7 +8,6 @@ const jsonBodyParser = express.json();
 
 const serializeUser = user => ({
   user_id: user.user_id,
-  photo: user.photo,
   name: user.name,
   user_name: user.user_name,
   password: user.password,
@@ -30,7 +29,6 @@ usersRouter
   })
   .post(jsonBodyParser, (req, res, next) => {
     const {
-      photo,
       name,
       user_name,
       password,
@@ -40,7 +38,6 @@ usersRouter
       zip,
     } = req.body;
     const newUser = {
-      photo,
       name,
       user_name,
       password,
@@ -51,7 +48,6 @@ usersRouter
     };
 
     for (const field of [
-      'photo',
       'name',
       'user_name',
       'password',
@@ -111,9 +107,9 @@ usersRouter
   })
 
   .patch(jsonBodyParser, (req, res, next) => {
-    const { photo, name, user_name, email, address, state, zip } = req.body;
+    const { name, user_name, email, address, state, zip } = req.body;
 
-    const userToUpdate = { photo, name, user_name, email, address, state, zip };
+    const userToUpdate = { name, user_name, email, address, state, zip };
 
     const numOfValues = Object.values(userToUpdate).filter(Boolean).length;
 
@@ -122,7 +118,7 @@ usersRouter
       return res.status(400).json({
         error: {
           message:
-            'Request body must contain either "photo", "name", "user_name", "email", "address", "state", "zip"',
+            'Request body must contain either "name", "user_name", "email", "address", "state", "zip"',
         },
       });
     }
