@@ -38,7 +38,6 @@ usersRouter
       address,
       state,
       zip,
-      isadmin,
     } = req.body;
     const newUser = {
       photo,
@@ -49,7 +48,6 @@ usersRouter
       address,
       state,
       zip,
-      isadmin,
     };
 
     for (const field of [
@@ -61,7 +59,6 @@ usersRouter
       'address',
       'state',
       'zip',
-      'isadmin',
     ]) {
       if (!newUser[field]) {
         logger.error(`${field} is required`);

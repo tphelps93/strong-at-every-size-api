@@ -25,7 +25,7 @@ CREATE TABLE saes_users (
     address TEXT NOT NULL,
     state TEXT NOT NULL,
     zip INTEGER NOT NULL,
-    isAdmin BOOLEAN NOT NULL
+    isAdmin BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE saes_items (
