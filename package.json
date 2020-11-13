@@ -28,6 +28,7 @@
     "knex": "^0.21.12",
     "morgan": "^1.10.0",
     "pg": "^8.5.0",
+    "winston": "^3.3.3",
     "xss": "^1.0.8"
   },
   "devDependencies": {

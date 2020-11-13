@@ -13,6 +13,7 @@ const newsRouter = require('./news/news-router');
 const promosRouter = require('./promos/promos-router');
 const testimoniesRouter = require('./testimonies/testimonies-router');
 const reviewsRouter = require('./reviews/reviews-router');
+const purchasesRouter = require('./purchases/purchases-router');
 
 const app = express();
 
@@ -29,10 +30,11 @@ app.use(
 app.use('/api/users', usersRouter);
 app.use('/api/items', itemsRouter);
 app.use('/api/programs', programsRouter);
-app.use('/api/news', newsRouter);
+app.use('/api/articles', newsRouter);
 app.use('/api/promos', promosRouter);
 app.use('/api/testimonies', testimoniesRouter);
 app.use('/api/reviews', reviewsRouter);
+app.use('/api/purchases', purchasesRouter);
 app.use('api/auth', authRouter);
 
 app.use(function errorHandler(error, req, res, next) {

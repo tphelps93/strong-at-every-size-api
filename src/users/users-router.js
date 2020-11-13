@@ -1,29 +1,140 @@
 const express = require('express');
+const logger = require('../logger');
 const path = require('path');
 const UsersService = require('./users-service');
 
 const usersRouter = express.Router();
 const jsonBodyParser = express.json();
 
-usersRouter.route('/').get((req, res, next) => {
-  UsersService.getAllUsers(req.app.get('db'))
-    .then(users => {
-      res.json(users);
-    })
-    .catch(next);
+const serializeUser = user => ({
+  user_id: user.user_id,
+  photo: user.photo,
+  name: user.name,
+  user_name: user.user_name,
+  password: user.password,
+  email: user.email,
+  address: user.address,
+  state: user.state,
+  zip: user.zip,
+  isadmin: user.isadmin,
 });
 
+usersRouter
+  .route('/')
+  .get(jsonBodyParser, (req, res, next) => {
+    UsersService.getAllUsers(req.app.get('db'))
+      .then(users => {
+        res.json(users.map(serializeUser));
+      })
+      .catch(next);
+  })
+  .post(jsonBodyParser, (req, res, next) => {
+    const {
+      photo,
+      name,
+      user_name,
+      password,
+      email,
+      address,
+      state,
+      zip,
+      isadmin,
+    } = req.body;
+    const newUser = {
+      photo,
+      name,
+      user_name,
+      password,
+      email,
+      address,
+      state,
+      zip,
+      isadmin,
+    };
+
+    for (const field of [
+      'photo',
+      'name',
+      'user_name',
+      'password',
+      'email',
+      'address',
+      'state',
+      'zip',
+      'isadmin',
+    ]) {
+      if (!newUser[field]) {
+        logger.error(`${field} is required`);
+        return res.status(400).send({
+          error: { message: `'${field}' is required` },
+        });
+      }
+    }
+    return UsersService.insertUser(req.app.get('db'), newUser)
+      .then(user => {
+        logger.info(`User with id ${user.user_id} created.`);
+        res
+          .status(201)
+          .location(path.posix.join(req.originalUrl, `/${user.user_id}`))
+          .json(serializeUser(user));
+      })
+      .catch(next);
+  });
+
+usersRouter
+  .route('/:user_id')
+  .all((req, res, next) => {
+    const { user_id } = req.params;
+
+    UsersService.getById(req.app.get('db'), user_id)
+      .then(user => {
+        if (!user) {
+          logger.error(`User with id ${user_id} not found.`);
+          return res.status(404).json({
+            error: { message: `User Not Found` },
+          });
+        }
+        res.user = user;
+        next();
+      })
+      .catch(next);
+  })
+  .get((req, res) => {
+    res.json(serializeUser(res.user));
+  })
+
+  .delete((req, res, next) => {
+    const { user_id } = req.params;
+    UsersService.deleteUser(req.app.get('db'), user_id)
+      .then(numRowsAffected => {
+        logger.info(`User with id ${user_id} deleted.`);
+        res.status(204).end();
+      })
+      .catch(next);
+  })
+
+  .patch(jsonBodyParser, (req, res, next) => {
+    const { photo, name, user_name, email, address, state, zip } = req.body;
+
+    const userToUpdate = { photo, name, user_name, email, address, state, zip };
+
+    const numOfValues = Object.values(userToUpdate).filter(Boolean).length;
+
+    if (numOfValues === 0) {
+      logger.error('Invalid update without required fields');
+      return res.status(400).json({
+        error: {
+          message:
+            'Request body must contain either "photo", "name", "user_name", "email", "address", "state", "zip"',
+        },
+      });
+    }
+
+    UsersService.updateUser(req.app.get('db'), req.params.user_id, userToUpdate)
+      .then(numRowsAffected => {
+        res.status(204).end();
+      })
+      .catch(next);
+  });
+
 module.exports = usersRouter;
-
-
-/* All of the GET routes are working as intended. Today I must 
-continue working on the backend. All tests are passing for the GET,
-POST, DELETE, and UPDATE endpoints, but I have yet to implement them
-into the 'strong-at-every-size' database.  
-      * Work on other endpoints to get working on the main db 
-      * Once I get those working, confirm with Charles or a TA 
-           that my data structure is correct. 
-      * Once those two things are working properly, I can move to
-            connect the backend to the frontend.
-      * Then once I get everything I want rendering from the backend
-            to the frontend, I will then work on authentication.*/

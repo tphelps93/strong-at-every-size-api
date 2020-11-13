@@ -1,24 +1,22 @@
 const UsersService = {
-  getAllUsers(knex) {
-    return knex.select('*').from('saes_users');
+  getAllUsers(db) {
+    return db.select('*').from('saes_users');
   },
-  insertUser(knex, newUser) {
-    return knex
+  insertUser(db, newUser) {
+    return db
       .insert(newUser)
       .into('saes_users')
       .returning('*')
-      .then(rows => {
-        return rows[0];
-      });
+      .then(([user]) => user);
   },
-  getById(knex, id) {
-    return knex.from('saes_users').select('*').where('id', id).first();
+  getById(db, user_id) {
+    return db.from('saes_users').select('*').where('user_id', user_id).first();
   },
-  deleteUser(knex, id) {
-    return knex('saes_users').where({ id }).delete();
+  deleteUser(db, user_id) {
+    return db('saes_users').where({ user_id }).delete();
   },
-  updateUser(knex, id, newUserFields) {
-    return knex('saes_users').where({ id }).update(newUserFields);
+  updateUser(db, user_id, newUserFields) {
+    return db('saes_users').where({ user_id }).update(newUserFields);
   },
 };
 
