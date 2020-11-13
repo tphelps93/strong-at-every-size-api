@@ -27,6 +27,11 @@ app.use(
   })
 );
 
+
+app.get('/', (req, res) => {
+  res.send('Server running!');
+});
+
 app.use('/api/users', usersRouter);
 app.use('/api/items', itemsRouter);
 app.use('/api/programs', programsRouter);
