@@ -23,14 +23,9 @@ app.use(morgan(morganOption));
 app.use(helmet());
 app.use(
   cors({
-    // origin: NODE_ENV,
+    //  origin: NODE_ENV,
   })
 );
-
-
-app.get('/', (req, res) => {
-  res.send('Server running!');
-});
 
 app.use('/api/users', usersRouter);
 app.use('/api/items', itemsRouter);
