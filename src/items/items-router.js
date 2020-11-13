@@ -8,6 +8,7 @@ const jsonBodyParser = express.json();
 
 const serializeItem = item => ({
   item_id: item.item_id,
+  photo: item.photo,
   title: item.title,
   price: item.price,
   category: item.category,
@@ -25,9 +26,10 @@ itemsRouter
       .catch(next);
   })
   .post(jsonBodyParser, (req, res, next) => {
-    const { title, price, category, description } = req.body;
+    const { photo, title, price, category, description } = req.body;
 
     const newItem = {
+      photo,
       title,
       price,
       category,
@@ -35,6 +37,7 @@ itemsRouter
     };
 
     for (const field of [
+      'photo',
       'title',
       'price',
       'category',
@@ -91,9 +94,9 @@ itemsRouter
   })
 
   .patch(jsonBodyParser, (req, res, next) => {
-    const { title, price, category, description } = req.body;
+    const { photo, title, price, category, description } = req.body;
 
-    const itemToUpdate = { title, price, category, description };
+    const itemToUpdate = { photo, title, price, category, description };
 
     const numOfValues = Object.values(itemToUpdate).filter(Boolean).length;
 
@@ -102,7 +105,7 @@ itemsRouter
       return res.status(400).json({
         error: {
           message:
-            'Request body must contain either "photo", "content"',
+            'Request body must contain either "photo", "title", "price", "category", "description"',
         },
       });
     }
