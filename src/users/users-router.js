@@ -2,6 +2,8 @@ const express = require('express');
 const logger = require('../logger');
 const path = require('path');
 const UsersService = require('./users-service');
+const { requireAuth } = require('../middleware/jwt-auth');
+
 
 const usersRouter = express.Router();
 const jsonBodyParser = express.json();
@@ -96,7 +98,7 @@ usersRouter
     res.json(serializeUser(res.user));
   })
 
-  .delete((req, res, next) => {
+  .delete(requireAuth, (req, res, next) => {
     const { user_id } = req.params;
     UsersService.deleteUser(req.app.get('db'), user_id)
       .then(numRowsAffected => {
@@ -106,7 +108,7 @@ usersRouter
       .catch(next);
   })
 
-  .patch(jsonBodyParser, (req, res, next) => {
+  .patch(requireAuth, jsonBodyParser, (req, res, next) => {
     const { name, user_name, email, address, state, zip } = req.body;
 
     const userToUpdate = { name, user_name, email, address, state, zip };

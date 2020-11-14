@@ -2,6 +2,8 @@ const express = require('express');
 const path = require('path');
 const logger = require('../logger');
 const PromosService = require('./promos-service');
+const { requireAuth } = require('../middleware/jwt-auth');
+
 
 const promosRouter = express.Router();
 const jsonBodyParser = express.json();
@@ -21,7 +23,7 @@ promosRouter
       })
       .catch(next);
   })
-  .post(jsonBodyParser, (req, res, next) => {
+  .post(requireAuth, jsonBodyParser, (req, res, next) => {
     const { content } = req.body;
     const newPromo = {
       content,
@@ -67,7 +69,7 @@ promosRouter
     res.json(serializePromo(res.promo));
   })
 
-  .delete((req, res, next) => {
+  .delete(requireAuth, (req, res, next) => {
     const { promo_id } = req.params;
     PromosService.deletePromo(req.app.get('db'), promo_id)
       .then(numRowsAffected => {
@@ -77,7 +79,7 @@ promosRouter
       .catch(next);
   })
 
-  .patch(jsonBodyParser, (req, res, next) => {
+  .patch(requireAuth, jsonBodyParser, (req, res, next) => {
     const { content } = req.body;
 
     const promoToUpdate = { content };

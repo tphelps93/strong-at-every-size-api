@@ -2,6 +2,8 @@ const express = require('express');
 const path = require('path');
 const logger = require('../logger');
 const ItemsService = require('./items-service');
+const { requireAuth } = require('../middleware/jwt-auth');
+
 
 const itemsRouter = express.Router();
 const jsonBodyParser = express.json();
@@ -25,7 +27,7 @@ itemsRouter
       })
       .catch(next);
   })
-  .post(jsonBodyParser, (req, res, next) => {
+  .post(requireAuth, jsonBodyParser, (req, res, next) => {
     const { photo, title, price, category, description } = req.body;
 
     const newItem = {

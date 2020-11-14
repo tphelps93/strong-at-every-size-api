@@ -2,6 +2,8 @@ const express = require('express');
 const path = require('path');
 const logger = require('../logger');
 const NewsService = require('./news-service');
+const { requireAuth } = require('../middleware/jwt-auth');
+
 
 const newsRouter = express.Router();
 const jsonBodyParser = express.json();
@@ -21,7 +23,7 @@ newsRouter
       })
       .catch(next);
   })
-  .post(jsonBodyParser, (req, res, next) => {
+  .post(requireAuth, jsonBodyParser, (req, res, next) => {
     const { content } = req.body;
     const newArticle = {
       content,
