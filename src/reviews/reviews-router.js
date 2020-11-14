@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const logger = require('../logger');
 const ReviewsService = require('./reviews-service');
+const { requireAuth } = require('../middleware/basic-auth');
 
 const reviewsRouter = express.Router();
 const jsonBodyParser = express.json();
@@ -16,6 +17,7 @@ const serializeReview = review => ({
 
 reviewsRouter
   .route('/')
+  .all(requireAuth)
   .get((req, res, next) => {
     ReviewsService.getAllReviews(req.app.get('db'))
       .then(reviews => {
