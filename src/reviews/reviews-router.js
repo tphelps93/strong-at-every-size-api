@@ -24,10 +24,12 @@ reviewsRouter
       .catch(next);
   })
   .post(jsonBodyParser, (req, res, next) => {
-    const { content, rating } = req.body;
+    const { review_id, content, rating, userid } = req.body;
     const newReview = {
+      review_id,
       content,
       rating,
+      userid
     };
 
     for (const field of ['content', 'rating']) {
