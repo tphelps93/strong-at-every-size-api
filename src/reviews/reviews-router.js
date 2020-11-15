@@ -25,14 +25,15 @@ reviewsRouter
       .catch(next);
   })
   .post(requireAuth, jsonBodyParser, (req, res, next) => {
-    const { review_id, content, rating, userid } = req.body;
+    const { review_id, content, rating, userid, itemid } = req.body;
     const newReview = {
       review_id,
       content,
       rating,
-      userid
+      userid,
+      itemid,
     };
-
+    
     for (const field of ['content', 'rating']) {
       if (!newReview[field]) {
         logger.error(`${field} is required`);
@@ -41,7 +42,7 @@ reviewsRouter
         });
       }
     }
-
+    newReview.itemid = req.item.item_id;
     newReview.userid = req.user.user_id;
 
     return ReviewsService.insertReview(req.app.get('db'), newReview)

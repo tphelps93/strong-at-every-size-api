@@ -1,11 +1,13 @@
 const ReviewsService = {
-  getAllReviews(knex) {
-    return knex.select('*').from('user_reviews');
+  getAllReviews(db) {
+    return db.select('*').from('user_reviews');
   },
-  insertReview(db, newReview) {
+  insertReview(db, newReview, itemid) {
     return db
       .insert(newReview)
       .into('user_reviews')
+      .join('saes_items')
+      .where('item_id', itemid)
       .returning('*')
       .then(([review]) => review);
   },
