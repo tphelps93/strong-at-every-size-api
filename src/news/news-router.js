@@ -23,7 +23,7 @@ newsRouter
       })
       .catch(next);
   })
-  .post(requireAuth, jsonBodyParser, (req, res, next) => {
+  .post(jsonBodyParser, (req, res, next) => {
     const { content } = req.body;
     const newArticle = {
       content,

@@ -23,7 +23,7 @@ promosRouter
       })
       .catch(next);
   })
-  .post(requireAuth, jsonBodyParser, (req, res, next) => {
+  .post(jsonBodyParser, (req, res, next) => {
     const { content } = req.body;
     const newPromo = {
       content,
@@ -69,7 +69,7 @@ promosRouter
     res.json(serializePromo(res.promo));
   })
 
-  .delete(requireAuth, (req, res, next) => {
+  .delete((req, res, next) => {
     const { promo_id } = req.params;
     PromosService.deletePromo(req.app.get('db'), promo_id)
       .then(numRowsAffected => {
@@ -79,7 +79,7 @@ promosRouter
       .catch(next);
   })
 
-  .patch(requireAuth, jsonBodyParser, (req, res, next) => {
+  .patch(jsonBodyParser, (req, res, next) => {
     const { content } = req.body;
 
     const promoToUpdate = { content };

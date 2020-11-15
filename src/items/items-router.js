@@ -27,7 +27,7 @@ itemsRouter
       })
       .catch(next);
   })
-  .post(requireAuth, jsonBodyParser, (req, res, next) => {
+  .post(jsonBodyParser, (req, res, next) => {
     const { photo, title, price, category, description } = req.body;
 
     const newItem = {

@@ -4,7 +4,6 @@ const path = require('path');
 const UsersService = require('./users-service');
 const { requireAuth } = require('../middleware/jwt-auth');
 
-
 const usersRouter = express.Router();
 const jsonBodyParser = express.json();
 
@@ -30,25 +29,7 @@ usersRouter
       .catch(next);
   })
   .post(jsonBodyParser, (req, res, next) => {
-    const {
-      name,
-      user_name,
-      password,
-      email,
-      address,
-      state,
-      zip,
-    } = req.body;
-    const newUser = {
-      name,
-      user_name,
-      password,
-      email,
-      address,
-      state,
-      zip,
-    };
-
+    const { name, user_name, password, email, address, state, zip } = req.body;
     for (const field of [
       'name',
       'user_name',
@@ -58,20 +39,43 @@ usersRouter
       'state',
       'zip',
     ]) {
-      if (!newUser[field]) {
+      if (!req.body[field]) {
         logger.error(`${field} is required`);
         return res.status(400).send({
           error: { message: `'${field}' is required` },
         });
       }
     }
-    return UsersService.insertUser(req.app.get('db'), newUser)
-      .then(user => {
-        logger.info(`User with id ${user.user_id} created.`);
-        res
-          .status(201)
-          .location(path.posix.join(req.originalUrl, `/${user.user_id}`))
-          .json(serializeUser(user));
+
+    const passwordError = UsersService.validatePassword(password);
+
+    if (passwordError) return res.status(400).json({ error: passwordError });
+
+    UsersService.hasUserWithUserName(req.app.get('db'), user_name)
+      .then(hasUserWithUserName => {
+        if (hasUserWithUserName)
+          return res.status(400).json({ error: `Username already taken` });
+
+        return UsersService.hashedPassword(password).then(hashedPassword => {
+          const newUser = {
+            name,
+            user_name,
+            password: hashedPassword,
+            email,
+            address,
+            state,
+            zip,
+          };
+
+          return UsersService.insertUser(req.app.get('db'), newUser).then(
+            user => {
+              res
+                .status(201)
+                .location(path.posix.join(req.originalUrl, `/${user.user_id}`))
+                .json(serializeUser(user));
+            }
+          );
+        });
       })
       .catch(next);
   });
@@ -108,7 +112,7 @@ usersRouter
       .catch(next);
   })
 
-  .patch(requireAuth, jsonBodyParser, (req, res, next) => {
+  .patch(jsonBodyParser, (req, res, next) => {
     const { name, user_name, email, address, state, zip } = req.body;
 
     const userToUpdate = { name, user_name, email, address, state, zip };
