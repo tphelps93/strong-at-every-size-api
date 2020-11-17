@@ -9,6 +9,7 @@ const jsonBodyParser = express.json();
 
 const serializeUser = user => ({
   user_id: user.user_id,
+  photo: user.photo,
   name: user.name,
   user_name: user.user_name,
   password: user.password,
@@ -113,27 +114,46 @@ usersRouter
   })
 
   .patch(jsonBodyParser, (req, res, next) => {
-    const { name, user_name, email, address, state, zip } = req.body;
+    console.log(req.params);
+    UsersService.getById(req.app.get('db'), req.params.user_id).then(user => {
+      const { photo, name, user_name, email, address, state, zip, isadmin } = req.body;
+      if (user.isadmin === false) {
+        isadmin === false;
+      }
 
-    const userToUpdate = { name, user_name, email, address, state, zip };
+      const userToUpdate = {
+        photo,
+        name,
+        user_name,
+        email,
+        address,
+        state,
+        zip,
+        isadmin,
+      };
 
-    const numOfValues = Object.values(userToUpdate).filter(Boolean).length;
+      const numOfValues = Object.values(userToUpdate).filter(Boolean).length;
 
-    if (numOfValues === 0) {
-      logger.error('Invalid update without required fields');
-      return res.status(400).json({
-        error: {
-          message:
-            'Request body must contain either "name", "user_name", "email", "address", "state", "zip"',
-        },
-      });
-    }
+      if (numOfValues === 0) {
+        logger.error('Invalid update without required fields');
+        return res.status(400).json({
+          error: {
+            message:
+              'Request body must contain either "photo", "name", "user_name", "email", "address", "state", "zip", isadmin',
+          },
+        });
+      }
 
-    UsersService.updateUser(req.app.get('db'), req.params.user_id, userToUpdate)
-      .then(numRowsAffected => {
-        res.status(204).end();
-      })
-      .catch(next);
+      UsersService.updateUser(
+        req.app.get('db'),
+        req.params.user_id,
+        userToUpdate
+      )
+        .then(numRowsAffected => {
+          res.status(204).end();
+        })
+        .catch(next);
+    });
   });
 
 module.exports = usersRouter;

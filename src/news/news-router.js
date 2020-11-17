@@ -3,6 +3,7 @@ const path = require('path');
 const logger = require('../logger');
 const NewsService = require('./news-service');
 const { requireAuth } = require('../middleware/jwt-auth');
+const { title } = require('process');
 
 
 const newsRouter = express.Router();
@@ -10,6 +11,7 @@ const jsonBodyParser = express.json();
 
 const serializeArticle = article => ({
   news_id: article.news_id,
+  title: article.title,
   content: article.content,
   date_created: article.date_created,
 });
@@ -24,8 +26,9 @@ newsRouter
       .catch(next);
   })
   .post(jsonBodyParser, (req, res, next) => {
-    const { content } = req.body;
+    const { title, content } = req.body;
     const newArticle = {
+      title, 
       content,
     };
 
@@ -80,9 +83,9 @@ newsRouter
   })
 
   .patch(jsonBodyParser, (req, res, next) => {
-    const { content } = req.body;
+    const { title, content } = req.body;
 
-    const articleToUpdate = { content };
+    const articleToUpdate = { title, content };
 
     const numOfValues = Object.values(articleToUpdate).filter(Boolean).length;
 

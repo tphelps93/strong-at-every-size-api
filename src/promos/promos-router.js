@@ -4,12 +4,12 @@ const logger = require('../logger');
 const PromosService = require('./promos-service');
 const { requireAuth } = require('../middleware/jwt-auth');
 
-
 const promosRouter = express.Router();
 const jsonBodyParser = express.json();
 
 const serializePromo = promo => ({
   promo_id: promo.promo_id,
+  title: promo.title,
   content: promo.content,
   date_created: promo.date_created,
 });
@@ -23,13 +23,14 @@ promosRouter
       })
       .catch(next);
   })
-  .post(jsonBodyParser, (req, res, next) => {
-    const { content } = req.body;
+  .post(requireAuth, jsonBodyParser, (req, res, next) => {
+    const { title, content } = req.body;
     const newPromo = {
+      title,
       content,
     };
 
-    for (const field of ['content']) {
+    for (const field of ['title', 'content']) {
       if (!newPromo[field]) {
         logger.error(`${field} is required`);
         return res.status(400).send({
@@ -37,14 +38,23 @@ promosRouter
         });
       }
     }
+
     return PromosService.insertPromo(req.app.get('db'), newPromo)
       .then(promo => {
+        logger.info(`Promo with id ${promo.promo_id}`);
         res
           .status(201)
           .location(path.posix.join(req.originalUrl, `/${promo.promo_id}`))
           .json(promo);
       })
       .catch(next);
+  });
+
+promosRouter
+  .route('/is-admin')
+  .all(requireAuth)
+  .get((req, res, next) => {
+    res.json(req.user.isadmin);
   });
 
 promosRouter
@@ -80,9 +90,9 @@ promosRouter
   })
 
   .patch(jsonBodyParser, (req, res, next) => {
-    const { content } = req.body;
+    const { title, content } = req.body;
 
-    const promoToUpdate = { content };
+    const promoToUpdate = { title, content };
 
     const numOfValues = Object.values(promoToUpdate).filter(Boolean).length;
 

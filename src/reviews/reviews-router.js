@@ -11,6 +11,8 @@ const serializeReview = review => ({
   review_id: review.review_id,
   content: review.content,
   rating: review.rating,
+  itemid: review.itemid,
+  userid: review.userid,
   date_created: review.date_created
 });
 
@@ -20,21 +22,21 @@ reviewsRouter
   .get((req, res, next) => {
     ReviewsService.getAllReviews(req.app.get('db'))
       .then(reviews => {
-        res.json(reviews);
+        res.json(reviews.map(serializeReview));
       })
       .catch(next);
   })
   .post(requireAuth, jsonBodyParser, (req, res, next) => {
-    const { review_id, content, rating, userid, itemid } = req.body;
+    const { itemid, content, rating, userid } = req.body;
+    console.log(itemid);
     const newReview = {
-      review_id,
       content,
       rating,
-      userid,
       itemid,
+      userid
     };
-    
-    for (const field of ['content', 'rating']) {
+
+    for (const field of ['content', 'rating', 'itemid']) {
       if (!newReview[field]) {
         logger.error(`${field} is required`);
         return res.status(400).send({
@@ -42,7 +44,7 @@ reviewsRouter
         });
       }
     }
-    newReview.itemid = req.item.item_id;
+    
     newReview.userid = req.user.user_id;
 
     return ReviewsService.insertReview(req.app.get('db'), newReview)

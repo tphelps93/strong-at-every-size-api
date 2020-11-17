@@ -1,13 +1,11 @@
 const ReviewsService = {
-  getAllReviews(db) {
+  getAllReviews(db, item_id) {
     return db.select('*').from('user_reviews');
   },
-  insertReview(db, newReview, itemid) {
+  insertReview(db, newReview) {
     return db
       .insert(newReview)
       .into('user_reviews')
-      .join('saes_items')
-      .where('item_id', itemid)
       .returning('*')
       .then(([review]) => review);
   },
