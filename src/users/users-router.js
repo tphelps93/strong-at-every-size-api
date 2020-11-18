@@ -114,25 +114,34 @@ usersRouter
   })
 
   .patch(jsonBodyParser, (req, res, next) => {
-    console.log(req.params);
+    const {
+      photo,
+      name,
+      user_name,
+      email,
+      address,
+      state,
+      zip,
+      isadmin,
+    } = req.body;
+
+    const userToUpdate = {
+      photo,
+      name,
+      user_name,
+      email,
+      address,
+      state,
+      zip,
+      isadmin,
+    };
+
+    const numOfValues = Object.values(userToUpdate).filter(Boolean).length;
+
     UsersService.getById(req.app.get('db'), req.params.user_id).then(user => {
-      const { photo, name, user_name, email, address, state, zip, isadmin } = req.body;
       if (user.isadmin === false) {
         isadmin === false;
       }
-
-      const userToUpdate = {
-        photo,
-        name,
-        user_name,
-        email,
-        address,
-        state,
-        zip,
-        isadmin,
-      };
-
-      const numOfValues = Object.values(userToUpdate).filter(Boolean).length;
 
       if (numOfValues === 0) {
         logger.error('Invalid update without required fields');
