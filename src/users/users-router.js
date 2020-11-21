@@ -103,7 +103,7 @@ usersRouter
     res.json(serializeUser(res.user));
   })
 
-  .delete(requireAuth, (req, res, next) => {
+  .delete((req, res, next) => {
     const { user_id } = req.params;
     UsersService.deleteUser(req.app.get('db'), user_id)
       .then(numRowsAffected => {
@@ -158,8 +158,8 @@ usersRouter
         req.params.user_id,
         userToUpdate
       )
-        .then(numRowsAffected => {
-          res.status(204).end();
+        .then(updatedUser => {
+          res.status(200).json(serializeUser(updatedUser));
         })
         .catch(next);
     });

@@ -6,7 +6,8 @@ describe('Items service object', function () {
   let db;
   let testItems = [
     {
-      id: 1,
+      item_id: 1,
+      photo: 'www.image.com/image',
       title: 'SAES Tee',
       price: '$10.00',
       category: 'Apparel',
@@ -14,7 +15,8 @@ describe('Items service object', function () {
       date_created: new Date(),
     },
     {
-      id: 2,
+      item_id: 2,
+      photo: 'www.image.com/image',
       title: 'SAES Bag',
       price: '$20.00',
       category: 'Equipment',
@@ -22,7 +24,8 @@ describe('Items service object', function () {
       date_created: new Date(),
     },
     {
-      id: 3,
+      item_id: 3,
+      photo: 'www.image.com/image',
       title: 'SAES Dumbbell',
       price: '$30.00',
       category: 'Equipment',
@@ -63,7 +66,8 @@ describe('Items service object', function () {
       const thirdTestItem = testItems[thirdId - 1];
       return ItemsService.getById(db, thirdId).then(actual => {
         expect(actual).to.eql({
-          id: thirdId,
+          item_id: thirdId,
+          photo: thirdTestItem.photo,
           title: thirdTestItem.title,
           price: thirdTestItem.price,
           category: thirdTestItem.category,
@@ -78,14 +82,14 @@ describe('Items service object', function () {
       return ItemsService.deleteItem(db, itemId)
         .then(() => ItemsService.getAllItems(db))
         .then(allItems => {
-          // copy the test articles array without the "deleted" article
-          const expected = testItems.filter(item => item.id !== itemId);
+          const expected = testItems.filter(item => item.item_id !== itemId);
           expect(allItems).to.eql(expected);
         });
     });
     it(`updateItem() updates an item from the 'saes_items' table`, () => {
       const idOfItemToUpdate = 2;
       const newItemData = {
+        photo: 'www.image.com/image1',
         title: 'Updated Title',
         price: '$50.00',
         category: 'Apparel',
@@ -96,7 +100,7 @@ describe('Items service object', function () {
         .then(() => ItemsService.getById(db, idOfItemToUpdate))
         .then(item => {
           expect(item).to.eql({
-            id: idOfItemToUpdate,
+            item_id: idOfItemToUpdate,
             ...newItemData,
           });
         });
@@ -112,6 +116,7 @@ describe('Items service object', function () {
     it('insertItem() inserts a new item and resolves the new item with an "id"', () => {
       this.retries(3);
       const newItem = {
+        photo: 'www.image.com/image2',
         title: 'Test Title',
         price: '$30',
         category: 'Apparel',
@@ -120,6 +125,7 @@ describe('Items service object', function () {
       };
       return ItemsService.insertItem(db, newItem).then(actual => {
         expect(res => {
+          expect(res.body.photo).to.eql(newItem.photo);
           expect(res.body.title).to.eql(newItem.title);
           expect(res.body.price).to.eql(newItem.price);
           expect(res.body.category).to.eql(newItem.category);

@@ -1,25 +1,23 @@
 const express = require('express');
 const path = require('path');
 const logger = require('../logger');
-const NewsService = require('./news-service');
+const ArticlesService = require('./articles-service');
 const { requireAuth } = require('../middleware/jwt-auth');
-const { title } = require('process');
 
-
-const newsRouter = express.Router();
+const articlesRouter = express.Router();
 const jsonBodyParser = express.json();
 
 const serializeArticle = article => ({
-  news_id: article.news_id,
+  article_id: article.article_id,
   title: article.title,
   content: article.content,
   date_created: article.date_created,
 });
 
-newsRouter
+articlesRouter
   .route('/')
   .get((req, res, next) => {
-    NewsService.getAllArticles(req.app.get('db'))
+    ArticlesService.getAllArticles(req.app.get('db'))
       .then(articles => {
         res.json(articles.map(serializeArticle));
       })
@@ -40,25 +38,25 @@ newsRouter
         });
       }
     }
-    return NewsService.insertArticle(req.app.get('db'), newArticle)
+    return ArticlesService.insertArticle(req.app.get('db'), newArticle)
       .then(article => {
         res
           .status(201)
-          .location(path.posix.join(req.originalUrl, `/${article.news_id}`))
+          .location(path.posix.join(req.originalUrl, `/${article.article_id}`))
           .json(article);
       })
       .catch(next);
   });
 
-newsRouter
-  .route('/:news_id')
+articlesRouter
+  .route('/:article_id')
   .all((req, res, next) => {
-    const { news_id } = req.params;
+    const { article_id } = req.params;
 
-    NewsService.getById(req.app.get('db'), news_id)
+    ArticlesService.getById(req.app.get('db'), article_id)
       .then(article => {
         if (!article) {
-          logger.error(`Article with id ${news_id} not found.`);
+          logger.error(`Article with id ${article_id} not found.`);
           return res.status(404).json({
             error: { message: `Article Not Found` },
           });
@@ -73,19 +71,19 @@ newsRouter
   })
 
   .delete((req, res, next) => {
-    const { news_id } = req.params;
-    NewsService.deleteArticle(req.app.get('db'), news_id)
+    const { article_id } = req.params;
+    ArticlesService.deleteArticle(req.app.get('db'), article_id)
       .then(numRowsAffected => {
-        logger.info(`Article with id ${news_id} deleted.`);
+        logger.info(`Article with id ${article_id} deleted.`);
         res.status(204).end();
       })
       .catch(next);
   })
 
   .patch(jsonBodyParser, (req, res, next) => {
-    const { title, content } = req.body;
+    const { title, photo, content } = req.body;
 
-    const articleToUpdate = { title, content };
+    const articleToUpdate = { title, photo, content };
 
     const numOfValues = Object.values(articleToUpdate).filter(Boolean).length;
 
@@ -94,14 +92,14 @@ newsRouter
       return res.status(400).json({
         error: {
           message:
-            'Request body must contain either "photo", "content"',
+            'Request body must contain either "title", "photo", "content"',
         },
       });
     }
 
-    NewsService.updateArticle(
+    ArticlesService.updateArticle(
       req.app.get('db'),
-      req.params.news_id,
+      req.params.article_id,
       articleToUpdate
     )
       .then(numRowsAffected => {
@@ -110,4 +108,4 @@ newsRouter
       .catch(next);
   });
 
-module.exports = newsRouter;
+module.exports = articlesRouter;

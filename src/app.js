@@ -9,7 +9,7 @@ const authRouter = require('./auth/auth-router');
 const usersRouter = require('./users/users-router');
 const itemsRouter = require('./items/items-router');
 const programsRouter = require('./programs/programs-router');
-const newsRouter = require('./news/news-router');
+const articlesRouter = require('./articles/articles-router');
 const promosRouter = require('./promos/promos-router');
 const testimoniesRouter = require('./testimonies/testimonies-router');
 const reviewsRouter = require('./reviews/reviews-router');
@@ -30,12 +30,14 @@ app.use(
 app.use('/api/users', usersRouter);
 app.use('/api/items', itemsRouter);
 app.use('/api/programs', programsRouter);
-app.use('/api/articles', newsRouter);
+app.use('/api/articles', articlesRouter);
 app.use('/api/promos', promosRouter);
 app.use('/api/testimonies', testimoniesRouter);
 app.use('/api/reviews', reviewsRouter);
 app.use('/api/purchases', purchasesRouter);
 app.use('/api/auth', authRouter);
+
+
 app.use(function errorHandler(error, req, res, next) {
   let response;
   if (NODE_ENV === 'production') {

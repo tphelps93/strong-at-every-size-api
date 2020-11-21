@@ -2,7 +2,7 @@ BEGIN;
 
 TRUNCATE 
     saes_testimonies,
-    saes_news,
+    saes_articles,
     saes_promos,
     user_reviews,
     user_purchases,
@@ -101,10 +101,10 @@ insert into saes_promos (promo_id, content, date_created) values (2, 'Ab Shredde
 SELECT setval('saes_promos_promo_id_seq', max(promo_id)) FROM saes_promos;
 
 
-/* saes_news */
-insert into saes_news (news_id, content, date_created) values (1, 'Today we roll out a new program called, "Ab Shredder"! This program will be available for only $70! Come get it while its hot!', '11/11/2020');
+/* saes_articles */
+insert into saes_articles (article_id, content, date_created) values (1, 'Today we roll out a new program called, "Ab Shredder"! This program will be available for only $70! Come get it while its hot!', '11/11/2020');
 
-SELECT setval('saes_news_news_id_seq', max(news_id)) FROM saes_news;
+SELECT setval('saes_aritcles_article_id_seq', max(article_id)) FROM saes_articles;
 
 
 /* saes_testimonies */

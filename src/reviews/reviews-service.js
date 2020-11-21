@@ -1,5 +1,5 @@
 const ReviewsService = {
-  getAllReviews(db, item_id) {
+  getAllReviews(db) {
     return db.select('*').from('user_reviews');
   },
   insertReview(db, newReview) {

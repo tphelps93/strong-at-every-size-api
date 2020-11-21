@@ -19,7 +19,13 @@ const UsersService = {
     return db('saes_users').where({ user_id }).delete();
   },
   updateUser(db, user_id, newUserFields) {
-    return db('saes_users').where({ user_id }).update(newUserFields);
+    return db('saes_users')
+      .where({ user_id })
+      .update(newUserFields)
+      .returning('*')
+      .then(rows => {
+        return rows[0];
+      });
   },
   hasUserWithUserName(db, user_name) {
     return db('saes_users')

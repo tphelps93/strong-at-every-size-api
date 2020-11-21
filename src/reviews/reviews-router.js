@@ -28,7 +28,6 @@ reviewsRouter
   })
   .post(requireAuth, jsonBodyParser, (req, res, next) => {
     const { itemid, content, rating, userid } = req.body;
-    console.log(itemid);
     const newReview = {
       content,
       rating,
