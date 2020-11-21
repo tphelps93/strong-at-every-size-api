@@ -1,26 +1,17 @@
-# Express Boilerplate!
+# Strong At Every Size Server
 
-This is a boilerplate project used for starting new projects!
+### This is the back-end server for Strong At Every Size.
 
-## Set up
+### Built using Node.js, Express, and PostgreSQL.
 
-Complete the following steps to start a new project (NEW-PROJECT-NAME):
+### The server is deployed to Heroku.
 
-1. Clone this repository to your local machine `git clone BOILERPLATE-URL NEW-PROJECTS-NAME`
-2. `cd` into the cloned repository
-3. Make a fresh start of the git history for this project with `rm -rf .git && git init`
-4. Install the node dependencies `npm install`
-5. Move the example Environment file to `.env` that will be ignored by git and read by the express server `mv example.env .env`
-6. Edit the contents of the `package.json` to use NEW-PROJECT-NAME instead of `"name": "express-boilerplate",`
+## STEPS 
+1. 'npm run migrate' to create the tables
+2. 'npm run dev' to run the server
 
-## Scripts
+### Live Server: https://whispering-castle-58125.herokuapp.com/
+### Live Application: https://strong-at-every-size-frontend-1ao54pi9v.vercel.app/home
 
-Start the application `npm start`
-
-Start nodemon for the application `npm run dev`
-
-Run the tests `npm test`
-
-## Deploying
-
-When your new project is ready for deployment, add a new Heroku application with `heroku create`. This will make a new git remote called "heroku" and you can then `npm run deploy` which will push to this remote's master branch.
+## Summary 
+The main feature of this website is the store, that will contain 'Strong At Every Size' brand apparel and items as well as access to purchase unique and diverse workout plans and even workouts that can be specifically tailored to the individual. The main benefit of using our site as opposed to something else is that our custom workouts will put you through a brief questionarre to get a general overview of your current fitness level, then you would meet with Sarah on a predetermined frequency and schedule to have a truly tailored and in-depth personal training experience, online.
