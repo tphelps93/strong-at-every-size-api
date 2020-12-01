@@ -18,7 +18,7 @@
 
 ## Summary
 
-The main feature of this website is the store, that will contain 'Strong At Every Size' brand apparel and items as well as access to purchase unique and diverse workout plans and even workouts that can be specifically tailored to the individual. The main benefit of using our site as opposed to something else is that our custom workouts will put you through a brief questionarre to get a general overview of your current fitness level, then you would meet with Sarah on a predetermined frequency and schedule to have a truly tailored and in-depth personal training experience, online.
+The main feature of this app is the admin user ability to add things promotions, news, testimonies, items to the store, and view users in the database. The normal users will be able to view and add reviews to items, and view and edit their individual profiles. 
 
 ![image](https://user-images.githubusercontent.com/55715053/100108382-b71b5480-2e38-11eb-8399-ce31521cf1a5.png)
 
