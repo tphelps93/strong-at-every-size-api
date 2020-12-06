@@ -12,9 +12,9 @@
 1. 'npm run migrate' to create the tables
 2. 'npm run dev' to run the server
 
-### Live Server: https://whispering-castle-58125.herokuapp.com/
+#### Live Server: https://whispering-castle-58125.herokuapp.com/
 
-### Live Application: https://strong-at-every-size-frontend-1ao54pi9v.vercel.app/home
+#### Live Application: https://strong-at-every-size-frontend-1ao54pi9v.vercel.app/home
 
 ## Summary
 
