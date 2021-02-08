@@ -20,6 +20,7 @@ insert into saes_users (user_id, photo, name, user_name, password, email, addres
 insert into saes_users (user_id, photo, name, user_name, password, email, address, state, zip, isAdmin) values (4, 'http://dummyimage.com/197x100.bmp/5fa2dd/ffffff', 'Udale Smellie', 'usmellie3', '$2a$12$fEl246uIFg6Icojb7NcCCOI/yf.RsdGeG8bYvp7yl/u6zOlKOi3t.', 'usmellie3@cargocollective.com', '82285 7th Parkway', 'WV', '25356', false);
 insert into saes_users (user_id, photo, name, user_name, password, email, address, state, zip, isAdmin) values (5, 'http://dummyimage.com/120x139.png/ff4444/ffffff', 'Vinnie Crowest', 'vcrowest4', '$2a$12$KBPgg5rDGdoeomSqfbgFPeztGBpJpUeUUuxY1MM4EteD8AXRCnt0K', 'vcrowest4@about.me', '5248 Londonderry Crossing', 'GA', '30328', false);
 
+
 SELECT setval('saes_users_user_id_seq', max(user_id)) FROM saes_users;
 /* saes_items */
 

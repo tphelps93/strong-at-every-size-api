@@ -15,11 +15,14 @@ const testimoniesRouter = require('./testimonies/testimonies-router');
 const reviewsRouter = require('./reviews/reviews-router');
 const purchasesRouter = require('./purchases/purchases-router');
 
+// Init app
 const app = express();
 
 const morganOption = NODE_ENV === 'production' ? 'tiny' : 'common';
 
 app.use(morgan(morganOption));
+// makes uploads publicly available. Find a way to make private, but still be used on the frontend.
+app.use('uploads', express.static('items/uploads'));
 app.use(helmet());
 app.use(
   cors({
@@ -28,7 +31,7 @@ app.use(
 );
 
 app.use('/api/users', usersRouter);
-app.use('/api/items', itemsRouter);
+app.use('/api/items', itemsRouter); 
 app.use('/api/programs', programsRouter);
 app.use('/api/articles', articlesRouter);
 app.use('/api/promos', promosRouter);
