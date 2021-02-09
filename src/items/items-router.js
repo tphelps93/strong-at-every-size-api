@@ -4,6 +4,33 @@ const logger = require('../logger');
 const ItemsService = require('./items-service');
 const { requireAuth } = require('../middleware/jwt-auth');
 
+<<<<<<< HEAD
+=======
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, '/uploads');
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + file.originalname);
+  },
+});
+
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
+    cb(null, true);
+  } else {
+    cb(new Error('File must be "jpeg" or "png"'), false);
+  }
+};
+
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 1024 * 1024 * 5,
+  },
+  fileFilter: fileFilter,
+});
+>>>>>>> feature-branch
 
 const itemsRouter = express.Router();
 const jsonBodyParser = express.json();
@@ -30,8 +57,13 @@ itemsRouter
   .post(jsonBodyParser, (req, res, next) => {
     const { photo, title, price, category, description } = req.body;
 
+
     const newItem = {
+<<<<<<< HEAD
       photo,
+=======
+      photo: req.file.filename,
+>>>>>>> feature-branch
       title,
       price,
       category,
