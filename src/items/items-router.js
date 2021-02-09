@@ -7,7 +7,7 @@ const { requireAuth } = require('../middleware/jwt-auth');
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'items/uploads');
+    cb(null, '/uploads');
   },
   filename: function (req, file, cb) {
     cb(null, Date.now() + file.originalname);
