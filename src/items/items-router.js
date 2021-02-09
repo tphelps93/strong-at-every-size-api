@@ -55,8 +55,9 @@ itemsRouter
   .post(jsonBodyParser, upload.single('photo'), (req, res, next) => {
     const { title, price, category, description } = req.body;
 
+
     const newItem = {
-      photo: req.file.path,
+      photo: req.file.filename,
       title,
       price,
       category,
