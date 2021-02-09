@@ -2,33 +2,8 @@ const express = require('express');
 const path = require('path');
 const logger = require('../logger');
 const ItemsService = require('./items-service');
-const multer = require('multer');
 const { requireAuth } = require('../middleware/jwt-auth');
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'items/uploads');
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + file.originalname);
-  },
-});
-
-const fileFilter = (req, file, cb) => {
-  if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
-    cb(null, true);
-  } else {
-    cb(new Error('File must be "jpeg" or "png"'), false);
-  }
-};
-
-const upload = multer({
-  storage: storage,
-  limits: {
-    fileSize: 1024 * 1024 * 5,
-  },
-  fileFilter: fileFilter,
-});
 
 const itemsRouter = express.Router();
 const jsonBodyParser = express.json();
@@ -52,11 +27,11 @@ itemsRouter
       })
       .catch(next);
   })
-  .post(jsonBodyParser, upload.single('photo'), (req, res, next) => {
-    const { title, price, category, description } = req.body;
+  .post(jsonBodyParser, (req, res, next) => {
+    const { photo, title, price, category, description } = req.body;
 
     const newItem = {
-      photo: req.file.path,
+      photo,
       title,
       price,
       category,
@@ -121,9 +96,9 @@ itemsRouter
   })
 
   .patch(jsonBodyParser, (req, res, next) => {
-    const { title, price, category, description } = req.body;
+    const { photo, title, price, category, description } = req.body;
 
-    const itemToUpdate = { photo: req.file.path, title, price, category, description };
+    const itemToUpdate = { photo, title, price, category, description };
 
     const numOfValues = Object.values(itemToUpdate).filter(Boolean).length;
 
@@ -137,7 +112,11 @@ itemsRouter
       });
     }
 
-    ItemsService.updateItem(req.app.get('db'), req.params.item_id, itemToUpdate)
+    ItemsService.updateItem(
+      req.app.get('db'),
+      req.params.item_id,
+      itemToUpdate
+    )
       .then(numRowsAffected => {
         res.status(204).end();
       })

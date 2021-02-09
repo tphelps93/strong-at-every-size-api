@@ -24,7 +24,8 @@ authRouter.post('/login', jsonBodyParser, (req, res, next) => {
 
       return AuthService.comparePasswords(
         loginUser.password,
-        dbUser.password).then(compareMatch => {
+        dbUser.password
+      ).then(compareMatch => {
         if (!compareMatch)
           return res.status(400).json({
             error: `Incorrect user_name or password. Password mismatch.${loginUser.password} DB ${dbUser.password}`,
