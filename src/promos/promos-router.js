@@ -2,13 +2,40 @@ const express = require('express');
 const path = require('path');
 const logger = require('../logger');
 const PromosService = require('./promos-service');
+const multer = require('multer');
 const { requireAuth } = require('../middleware/jwt-auth');
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, './uploads/');
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + file.originalname);
+  },
+});
+
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
+    cb(null, true);
+  } else {
+    cb(new Error('File must be "jpeg" or "png"'), false);
+  }
+};
+
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 1024 * 1024 * 5,
+  },
+  fileFilter: fileFilter,
+});
 
 const promosRouter = express.Router();
 const jsonBodyParser = express.json();
 
 const serializePromo = promo => ({
   promo_id: promo.promo_id,
+  photo: promo.photo,
   title: promo.title,
   content: promo.content,
   date_created: promo.date_created,
@@ -23,14 +50,15 @@ promosRouter
       })
       .catch(next);
   })
-  .post(requireAuth, jsonBodyParser, (req, res, next) => {
+  .post(requireAuth, jsonBodyParser, upload.single('photo'), (req, res, next) => {
     const { title, content } = req.body;
     const newPromo = {
+      photo: req.file.filename,
       title,
       content,
     };
 
-    for (const field of ['title', 'content']) {
+    for (const field of ['photo', 'title', 'content']) {
       if (!newPromo[field]) {
         logger.error(`${field} is required`);
         return res.status(400).send({
@@ -89,10 +117,10 @@ promosRouter
       .catch(next);
   })
 
-  .patch(jsonBodyParser, (req, res, next) => {
+  .patch(requireAuth, jsonBodyParser, (req, res, next) => {
     const { title, content } = req.body;
 
-    const promoToUpdate = { title, content };
+    const promoToUpdate = { photo: req.file.filename, title, content };
 
     const numOfValues = Object.values(promoToUpdate).filter(Boolean).length;
 
@@ -100,7 +128,7 @@ promosRouter
       logger.error('Invalid update without required fields');
       return res.status(400).json({
         error: {
-          message: 'Request body must contain either "content"',
+          message: 'Request body must contain either "photo", "title" or "content"',
         },
       });
     }

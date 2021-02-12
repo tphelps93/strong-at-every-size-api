@@ -3,7 +3,6 @@ const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
 const helmet = require('helmet');
-const path = require('path');
 const { NODE_ENV } = require('./config');
 
 const authRouter = require('./auth/auth-router');
@@ -23,7 +22,7 @@ const morganOption = NODE_ENV === 'production' ? 'tiny' : 'common';
 
 app.use(morgan(morganOption));
 // makes uploads publicly available. Find a way to make private, but still be used on the frontend.
-app.use(express.static(path.join(__dirname, 'public')));
+app.use('/uploads', express.static('uploads'));
 app.use(helmet());
 app.use(
   cors({

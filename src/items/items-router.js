@@ -7,7 +7,7 @@ const { requireAuth } = require('../middleware/jwt-auth');
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, '/uploads');
+    cb(null, './uploads/');
   },
   filename: function (req, file, cb) {
     cb(null, Date.now() + file.originalname);
@@ -124,7 +124,7 @@ itemsRouter
   .patch(jsonBodyParser, (req, res, next) => {
     const { title, price, category, description } = req.body;
 
-    const itemToUpdate = { photo: req.file.path, title, price, category, description };
+    const itemToUpdate = { photo: req.file.filename, title, price, category, description };
 
     const numOfValues = Object.values(itemToUpdate).filter(Boolean).length;
 

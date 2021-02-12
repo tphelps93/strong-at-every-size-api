@@ -2,6 +2,34 @@ const express = require('express');
 const logger = require('../logger');
 const path = require('path');
 const TestimoniesService = require('./testimonies-service');
+const multer = require('multer');
+const { requireAuth } = require('../middleware/jwt-auth');
+
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, './uploads/');
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + file.originalname);
+  },
+});
+
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
+    cb(null, true);
+  } else {
+    cb(new Error('File must be "jpeg" or "png"'), false);
+  }
+};
+
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 1024 * 1024 * 5,
+  },
+  fileFilter: fileFilter,
+});
 
 const testimoniesRouter = express.Router();
 const jsonBodyParser = express.json();
@@ -22,10 +50,10 @@ testimoniesRouter
       })
       .catch(next);
   })
-  .post(jsonBodyParser, (req, res, next) => {
+  .post(requireAuth, jsonBodyParser, upload.single('photo'), (req, res, next) => {
     const { photo, content } = req.body;
     const newTestimony = {
-      photo,
+      photo: req.file.filename,
       content,
     };
 
@@ -70,7 +98,7 @@ testimoniesRouter
     res.json(serializeTestimony(res.testimony));
   })
 
-  .delete((req, res, next) => {
+  .delete(requireAuth, (req, res, next) => {
     const { testimony_id } = req.params;
     TestimoniesService.deleteTestimony(req.app.get('db'), testimony_id)
       .then(numRowsAffected => {
@@ -80,10 +108,10 @@ testimoniesRouter
       .catch(next);
   })
 
-  .patch(jsonBodyParser, (req, res, next) => {
-    const { photo, content } = req.body;
+  .patch(requireAuth, jsonBodyParser, (req, res, next) => {
+    const { content } = req.body;
 
-    const testimonyToUpdate = { photo, content };
+    const testimonyToUpdate = { photo: req.file.filename, content };
 
     const numOfValues = Object.values(testimonyToUpdate).filter(Boolean).length;
 
