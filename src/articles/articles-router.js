@@ -51,7 +51,7 @@ articlesRouter
       })
       .catch(next);
   })
-  .post(requireAuth, jsonBodyParser, upload.single('photo'), (req, res, next) => {
+  .post(/* requireAuth, */ jsonBodyParser, upload.single('photo'), (req, res, next) => {
     const { title, content } = req.body;
     const newArticle = {
       photo: req.file.filename,

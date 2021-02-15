@@ -5,7 +5,6 @@ const TestimoniesService = require('./testimonies-service');
 const multer = require('multer');
 const { requireAuth } = require('../middleware/jwt-auth');
 
-
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, './uploads/');
@@ -50,31 +49,43 @@ testimoniesRouter
       })
       .catch(next);
   })
-  .post(requireAuth, jsonBodyParser, upload.single('photo'), (req, res, next) => {
-    const { photo, content } = req.body;
-    const newTestimony = {
-      photo: req.file.filename,
-      content,
-    };
+  .post(
+    requireAuth,
+    jsonBodyParser,
+    upload.single('photo'),
+    (req, res, next) => {
+      const { content } = req.body;
+      upload.single('photo')(req, res, function (error) {
+        if (error) {
+          console.log(`upload.single error: ${error}`);
+        }
+      });
+      const newTestimony = {
+        photo: req.file.filename,
+        content,
+      };
 
-    for (const field of ['photo', 'content']) {
-      if (!newTestimony[field]) {
-        logger.error(`${field} is required`);
-        return res.status(400).send({
-          error: { message: `'${field}' is required` },
-        });
+      for (const field of ['photo', 'content']) {
+        if (!newTestimony[field]) {
+          logger.error(`${field} is required`);
+          return res.status(400).send({
+            error: { message: `'${field}' is required` },
+          });
+        }
       }
+      return TestimoniesService.insertTestimony(req.app.get('db'), newTestimony)
+        .then(testimony => {
+          logger.info(`Testimony with id ${testimony.testimony_id} created.`);
+          res
+            .status(201)
+            .location(
+              path.posix.join(req.originalUrl, `/${testimony.testimony_id}`)
+            )
+            .json(testimony);
+        })
+        .catch(next);
     }
-    return TestimoniesService.insertTestimony(req.app.get('db'), newTestimony)
-      .then(testimony => {
-        logger.info(`Testimony with id ${testimony.testimony_id} created.`);
-        res
-          .status(201)
-          .location(path.posix.join(req.originalUrl, `/${testimony.testimony_id}`))
-          .json(testimony);
-      })
-      .catch(next);
-  });
+  );
 
 testimoniesRouter
   .route('/:testimony_id')
@@ -119,13 +130,16 @@ testimoniesRouter
       logger.error('Invalid update without required fields');
       return res.status(400).json({
         error: {
-          message:
-            'Request body must contain either "photo", "content"'
+          message: 'Request body must contain either "photo", "content"',
         },
       });
     }
 
-    TestimoniesService.updateTestimony(req.app.get('db'), req.params.testimony_id, testimonyToUpdate)
+    TestimoniesService.updateTestimony(
+      req.app.get('db'),
+      req.params.testimony_id,
+      testimonyToUpdate
+    )
       .then(numRowsAffected => {
         res.status(204).end();
       })

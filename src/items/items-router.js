@@ -55,7 +55,6 @@ itemsRouter
   .post(jsonBodyParser, upload.single('photo'), (req, res, next) => {
     const { title, price, category, description } = req.body;
 
-
     const newItem = {
       photo: req.file.filename,
       title,
@@ -124,7 +123,13 @@ itemsRouter
   .patch(jsonBodyParser, (req, res, next) => {
     const { title, price, category, description } = req.body;
 
-    const itemToUpdate = { photo: req.file.filename, title, price, category, description };
+    const itemToUpdate = {
+      photo: req.file.filename,
+      title,
+      price,
+      category,
+      description,
+    };
 
     const numOfValues = Object.values(itemToUpdate).filter(Boolean).length;
 

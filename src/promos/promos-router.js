@@ -50,7 +50,7 @@ promosRouter
       })
       .catch(next);
   })
-  .post(requireAuth, jsonBodyParser, upload.single('photo'), (req, res, next) => {
+  .post(/* requireAuth, */ jsonBodyParser, upload.single('photo'), (req, res, next) => {
     const { title, content } = req.body;
     const newPromo = {
       photo: req.file.filename,
