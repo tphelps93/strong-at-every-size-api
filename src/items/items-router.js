@@ -52,11 +52,13 @@ itemsRouter
       })
       .catch(next);
   })
-  .post(jsonBodyParser, upload.single('photo'), (req, res, next) => {
+  .post(jsonBodyParser, upload.single('filename'), (req, res, next) => {
     const { title, price, category, description } = req.body;
+    const { filename } = req.file;
+    console.log(JSON.stringify(req, null, 2));
 
     const newItem = {
-      photo: req.file.filename,
+      filename,
       title,
       price,
       category,
