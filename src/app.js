@@ -4,6 +4,8 @@ const morgan = require('morgan');
 const cors = require('cors');
 const helmet = require('helmet');
 const { NODE_ENV } = require('./config');
+const multer = require('multer');
+const AWS = require('aws-sdk');
 
 const authRouter = require('./auth/auth-router');
 const usersRouter = require('./users/users-router');
@@ -17,6 +19,11 @@ const purchasesRouter = require('./purchases/purchases-router');
 
 const app = express();
 
+const s3 = new AWS.S3({
+  accessKeyId: process.env.AWS_ACCESS_KEY,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+});
+
 const morganOption = NODE_ENV === 'production' ? 'tiny' : 'common';
 
 app.use(morgan(morganOption));
@@ -27,6 +34,33 @@ app.use(
   })
 );
 
+const storage = multer.memoryStorage({
+  destination: function (req, file, cb) {
+    cb(null, '/uploads');
+  },
+});
+
+const upload = multer({ storage }).single('photo');
+
+app.post('/api/upload', upload, (req, res) => {
+  let uploadedImage = `${Date.now()}${req.file.originalname}`;
+
+  res.send({uploadedImage});
+
+  const params = {
+    Bucket: process.env.AWS_S3_BUCKET,
+    Key: uploadedImage,
+    Body: req.file.buffer,
+  };
+
+  s3.upload(params, (error, data) => {
+    if (error) {
+      res.status(500).send(error);
+    }
+    res.status(200).send(data);
+  });
+});
+
 app.use('/api/users', usersRouter);
 app.use('/api/items', itemsRouter);
 app.use('/api/programs', programsRouter);
@@ -36,7 +70,6 @@ app.use('/api/testimonies', testimoniesRouter);
 app.use('/api/reviews', reviewsRouter);
 app.use('/api/purchases', purchasesRouter);
 app.use('/api/auth', authRouter);
-
 
 app.use(function errorHandler(error, req, res, next) {
   let response;
