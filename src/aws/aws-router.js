@@ -36,22 +36,18 @@ awsRouter
   .post(jsonBodyParser, upload, (req, res, next) => {
     let uploadedImage = `${Date.now()}${req.file.originalname}`;
 
-    res.send({ uploadedImage });
-
     const params = {
       Bucket: process.env.AWS_S3_BUCKET,
       Key: uploadedImage,
       Body: req.file.buffer,
     };
 
-    return s3
-      .upload(params, (error, uploadedImage) => {
-        if (error) {
-          res.status(500).send(error);
-        }
-        res.status(200).send(uploadedImage);
-      })
-      .catch(next);
+    return s3.upload(params, (error, uploadedImage) => {
+      if (error) {
+        res.status(500).send(error);
+      }
+      res.status(200).send(uploadedImage);
+    });
   });
 
 module.exports = awsRouter;

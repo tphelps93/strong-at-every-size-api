@@ -48,7 +48,7 @@ itemsRouter
       if (!newItem[field]) {
         logger.error(`${field} is required`);
         return res.status(400).send({
-          error: { message: `'${field}' is required` },
+          error: { message: `${field} is required` },
         });
       }
     }
