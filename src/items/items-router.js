@@ -58,7 +58,7 @@ itemsRouter
         res
           .status(201)
           .location(path.posix.join(req.originalUrl, `/${item.item_id}`))
-          .json(item);
+          .json(serializeItem(item));
       })
       .catch(next);
   });
